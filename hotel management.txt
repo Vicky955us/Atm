@@ -1,0 +1,134 @@
+step 1:start
+step 2:initialize room data:
+      * create a structure for room,which includes the room number,booking status,and guest name.
+      * Initialize the list of rooms(you can have a fixed number of rooms,say 5).
+      * set the booking status of all rooms to available (0),and initialize guest name as empty.
+step 3:Display Menu:
+      * Display a menu to the user with the following options:
+         1.View room status
+         2.Book a room
+         3.Check out from a room
+         4.Exit the program
+step 4:Room Display(option 1):
+       * Iterate through the rooms and display the rooms number,booking status,and guest name(if booked).
+step 5:Book Room(option 2):
+       * Ask the user to input the number they want to book.
+       * If the room is available:
+          1.Ask for the guest's name.
+          2.Mark the room as booked and assign the guest's name.
+        *If the room is already booked,inform the user.
+step 6:Check Out(option 3):
+       *Ask for the room number for check-out.
+       *If the room is booked:
+       *Mark the room as available and clear the guest's name.
+       *If the room is not booked,inform the user.
+step 7:Exist(option 4):
+       *Exist the program.
+step 8;End. 
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ROOMS 10  
+struct Room {
+    int roomNumber;
+    int isBooked;
+    char guestName[50];
+};
+void initializeRooms(struct Room rooms[], int size) {
+    for (int i = 0; i < size; i++) {
+        rooms[i].roomNumber = i + 1;
+        rooms[i].isBooked = 0;
+        strcpy(rooms[i].guestName, "Not Booked");
+    }
+}
+void displayRooms(struct Room rooms[], int size) {
+    printf("Room Number | Status     | Guest Name\n");
+    printf("---------------------------------------\n");
+    for (int i = 0; i < size; i++) {
+        printf("%-12d| %-11s| %s\n", rooms[i].roomNumber,
+               rooms[i].isBooked ? "Booked" : "Available",
+               rooms[i].isBooked ? rooms[i].guestName : "N/A");
+    }
+}
+
+// Function to book a room
+void bookRoom(struct Room rooms[], int size) {
+    int roomNumber;
+    char guestName[50];
+
+    printf("Enter room number to book (1 to %d): ", size);
+    scanf("%d", &roomNumber);
+    
+    if (roomNumber < 1 || roomNumber > size) {
+        printf("Invalid room number!\n");
+        return;
+    }
+    
+    if (rooms[roomNumber - 1].isBooked) {
+        printf("Room %d is already booked.\n", roomNumber);
+    } else {
+        printf("Enter guest name: ");
+        getchar();
+        fgets(guestName, 50, stdin);
+        guestName[strcspn(guestName, "\n")] = 0; 
+        
+        rooms[roomNumber - 1].isBooked = 1;
+        strcpy(rooms[roomNumber - 1].guestName, guestName);
+        printf("Room %d booked successfully for %s.\n", roomNumber, guestName);
+    }
+}
+
+void checkOut(struct Room rooms[], int size) {
+    int roomNumber;
+
+    printf("Enter room number to check out (1 to %d): ", size);
+    scanf("%d", &roomNumber);
+
+    if (roomNumber < 1 || roomNumber > size) {
+        printf("Invalid room number!\n");
+        return;
+    }
+
+    if (!rooms[roomNumber - 1].isBooked) {
+        printf("Room %d is not booked.\n", roomNumber);
+    } else {
+        rooms[roomNumber - 1].isBooked = 0;
+        strcpy(rooms[roomNumber - 1].guestName, "Not Booked");
+        printf("Checked out from room %d successfully.\n", roomNumber);
+    }
+}
+
+int main() {
+    struct Room rooms[MAX_ROOMS];
+    int choice;
+    initializeRooms(rooms, MAX_ROOMS);
+
+    while (1) {
+        printf("\n--- Hotel Management System ---\n");
+        printf("1. View all rooms\n");
+        printf("2. Book a room\n");
+        printf("3. Check out a room\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                displayRooms(rooms, MAX_ROOMS);
+                break;
+            case 2:
+                bookRoom(rooms, MAX_ROOMS);
+                break;
+            case 3:
+                checkOut(rooms, MAX_ROOMS);
+                break;
+            case 4:
+                printf("Exiting the program. Thank you!\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
